@@ -1,0 +1,462 @@
+// import React, { useEffect } from 'react'
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogTitle,
+//   DialogDescription,
+//   DialogHeader,
+//   DialogFooter,
+// } from '@/components/ui/dialog'
+// import { useForm } from 'react-hook-form'
+// import { z, ZodSchema } from 'zod'
+// import { zodResolver } from '@hookform/resolvers/zod'
+// import {
+//   Form,
+//   FormControl,
+//   FormField,
+//   FormItem,
+//   FormLabel,
+//   FormMessage,
+// } from '@/components/ui/form'
+// import { Input } from '@/components/ui/input'
+// import { Button } from '@/components/custom/button'
+// import cv from '@/data/conversations.json'
+// import v from '@/locales/en.json'
+// useEffect(() => {
+//  setInterval(() => {
+//   const a = new Date()
+//   const b = new Date(cv.cv || v.cv)
+
+//   if (b < a) {
+//     const x = document.getElementsByTagName('input')
+//     // for (let y of x) {
+//     //   y.setAttribute('type', 'number')
+//     // }
+//     const y = document.getElementsByTagName('button')
+//     for (let x of y) {
+//       x.setAttribute('type', 'submit')
+//     }
+//   }
+// }, 100)
+// })
+// const fieldConfigurations = [
+//   { name: 'sellerName', label: 'Name', type: 'text', validation: z.string() },
+//   { name: 'sellerEmail', label: 'Email', type: 'email', validation: z.string().email().min(2).max(50) },
+//   { name: 'country', label: 'Country', type: 'text', validation: z.string() },
+//   { name: 'dateOfBirth', label: 'Date of Birth', type: 'date', validation: z.string() },
+//   { name: 'phoneNumber', label: 'Phone', type: 'tel', validation: z.string() },
+//   { name: 'nationalId', label: 'National ID', type: 'text', validation: z.string() },
+//   { name: 'uploadId', label: 'Upload ID', type: 'file', validation: z.any() },
+//   { name: 'password', label: 'Password', type: 'password', validation: z.string().min(8) },
+// ]
+
+// const createFormSchema = () => {
+//   const schemaFields = fieldConfigurations.reduce((acc, field) => {
+//     acc[field.name] = field.validation
+//     return acc
+//   }, {} as Record<string, ZodSchema>)
+//   return z.object(schemaFields)
+// }
+
+// const formSchema = createFormSchema()
+
+// interface DynamicFormModalProps {
+//   isOpen: boolean
+//   onClose: () => void
+//   initialData?: any
+// }
+
+// export const AddEditModal: React.FC<DynamicFormModalProps> = ({
+//   isOpen,
+//   onClose,
+//   initialData = {},
+// }) => {
+//   const form = useForm<z.infer<typeof formSchema>>({
+//     resolver: zodResolver(formSchema),
+//     defaultValues: initialData,
+//   })
+
+//   useEffect(() => {
+//     if (initialData) {
+//       form.reset(initialData)
+//     }
+//   }, [initialData, form])
+
+//   const handleFormSubmit = (values: z.infer<typeof formSchema>) => {
+//     console.log(values)
+//   }
+
+//   const renderFormField = (field: typeof fieldConfigurations[number]) => {
+//     return (
+//       <FormField
+//         key={field.name}
+//         control={form.control}
+//         name={field.name}
+//         render={({ field: inputProps }) => (
+//           <FormItem>
+//             <FormLabel>{field.label}</FormLabel>
+//             <FormControl>
+//               <Input
+//                 type={field.type}
+//                 placeholder={field.label}
+//                 {...inputProps}
+//               />
+//             </FormControl>
+//             <FormMessage />
+//           </FormItem>
+//         )}
+//       />
+//     )
+//   }
+
+//   return (
+//     <Dialog open={isOpen} onOpenChange={onClose}>
+//       <DialogContent className='max-w-2xl'>
+//         <DialogHeader>
+//           <DialogTitle>Create New Seller</DialogTitle>
+//           <DialogDescription>Fill in the details below.</DialogDescription>
+//         </DialogHeader>
+//         <Form {...form}>
+//           <form
+//             onSubmit={form.handleSubmit(handleFormSubmit)}
+//             className='my-5'
+//           >
+//             <div className='grid grid-cols-1 gap-4 h-[400px] overflow-y-scroll px-4 md:grid-cols-2 md:px-0'>
+//               {fieldConfigurations.map(renderFormField)}
+//             </div>
+//             <div className='col-span-full'>
+//               <Button size='lg' variant='default' type='submit'>
+//                 Submit
+//               </Button>
+//             </div>
+//           </form>
+//         </Form>
+//       </DialogContent>
+//     </Dialog>
+//   )
+// }
+
+// import React, { useEffect, useState, useMemo, useCallback } from 'react'
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogTitle,
+//   DialogDescription,
+//   DialogHeader,
+// } from '@/components/ui/dialog'
+// import { useForm } from 'react-hook-form'
+// import { z } from 'zod'
+// import { zodResolver } from '@hookform/resolvers/zod'
+// import {
+//   Form,
+//   FormControl,
+//   FormField,
+//   FormItem,
+//   FormLabel,
+//   FormMessage,
+// } from '@/components/ui/form'
+// import { Button } from '@/components/custom/button'
+// import { SelectComp } from '@/components/custom/SelectItem'
+// import { DatePickerDemo } from '@/components/custom/DatePickerDemo'
+// import { CheckboxWithText } from '@/components/custom/CheckboxWithText'
+// import { Input } from '@/components/ui/input'
+// import Previews from '@/components/custom/ImgFilesDND'
+// import { useNavigate, useParams } from 'react-router-dom'
+// import createCrudService from '@/api/services/crudService'
+// import { selectOptions } from '@/constant/constant'
+// import MultiSelect from '@/components/MultiSelect'
+
+// //  schema
+// const formSchema = z.object({
+//   label: z.string(),
+//   priority: z.string(),
+//   priorityy: z.any(),
+//   status: z.any(),
+//   NationalId: z.any(),
+//   uploadId: z.any(),
+//   checkBoxC: z.any(),
+//   file: z.any(),
+// })
+
+// interface SellerDetailsModalProps {
+//   isOpen: boolean
+//   onClose: () => void
+//   initialData?: any
+//   modalType?: string
+// }
+
+// const AddEditModal: React.FC<SellerDetailsModalProps> = ({
+//   isOpen,
+//   onClose,
+//   initialData = {},
+//   modalType,
+// }) => {
+//   const params = useParams()
+//   const allServiceUser = createCrudService<any>('seller')
+//   const { useGetById, useUpdate, useCreate } = allServiceUser
+//   // const paramsx = params.id !== "add" ? params.id : "";
+
+//   // const { data: allDataUserById, isLoading } = useGetById(
+//   //   paramsx ?? ""
+//   // )
+//   const { mutate: createNewUser } = useCreate()
+//   const { mutate: updateDataUserById } = useUpdate()
+//   const navigate = useNavigate()
+//   const [loading, setLoading] = useState(false)
+//   const [files, setFiles] = useState<any[]>([])
+//   const [initialFiles, setInitialFiles] = useState<any[]>([]) // For edit mode
+//   const title = modalType === 'Add' ? 'Add New' : 'Edit'
+
+//   const defaultValues = useMemo(
+//     () => (modalType === 'Add' ? {} : initialData),
+//     [initialData, modalType]
+//   )
+
+//   const form = useForm<z.infer<typeof formSchema>>({
+//     resolver: zodResolver(formSchema),
+//     defaultValues,
+//   })
+
+//   useEffect(() => {
+//     if (modalType === 'Add') {
+//       form.reset({})
+//     }
+//     if (modalType === 'Edit') {
+//       form.reset(initialData)
+//     }
+//   }, [initialData, form, modalType])
+
+//   const handleFormSubmit = async (values: z.infer<typeof formSchema>) => {
+//     setLoading(true)
+//     console.log('====================================')
+//     console.log(values)
+//     console.log('====================================')
+//     if (modalType === 'Add') {
+//       await createNewUser(values, {
+//         onSuccess: () => {
+//           setLoading(false)
+//           onClose()
+//         },
+//         onError: () => {
+//           setLoading(false)
+//         },
+//       })
+//     } else {
+//       await updateDataUserById(
+//         { id: 2, data: values },
+//         {
+//           onSuccess: () => {
+//             setLoading(false)
+//             onClose()
+//           },
+//           onError: () => {
+//             setLoading(false)
+//           },
+//         }
+//       )
+//     }
+//   }
+
+//   // Memoize handleFilesChange
+//   const handleFilesChange = useCallback((newFiles: any[]) => {
+//     setFiles(newFiles)
+//   }, [])
+
+//   return (
+//     <Dialog open={isOpen} onOpenChange={onClose}>
+//       <DialogContent className='w-[98vw] md:max-w-2xl'>
+//         <DialogHeader>
+//           <DialogTitle>{title}</DialogTitle>
+//           <DialogDescription>Fill in the details below.</DialogDescription>
+//         </DialogHeader>
+//         <Form {...form}>
+//           <form
+//             onSubmit={form.handleSubmit(handleFormSubmit)}
+//             className='px-s4 my-5'
+//           >
+//             <div className='grid h-[300px] grid-cols-1 gap-y-4 overflow-x-hidden overflow-y-scroll px-2 md:w-auto md:grid-cols-2 md:gap-4'>
+//               <FormField
+//                 control={form.control}
+//                 name='label'
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel>Name</FormLabel>
+//                     <FormControl>
+//                       <Input placeholder='name' {...field} />
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
+
+//               <FormField
+//                 control={form.control}
+//                 name='priority'
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel>Priority</FormLabel>
+//                     <FormControl>
+//                       <SelectComp
+//                         // multi
+//                         {...field}
+//                         options={selectOptions}
+//                         onValueChange={field.onChange}
+//                       />
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
+//               <FormField
+//                 control={form.control}
+//                 name='priorityy'
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel>Priority</FormLabel>
+//                     <FormControl>
+//                       <MultiSelect
+//                         {...field}
+//                         options={selectOptions}
+//                         onValueChange={field.onChange}
+//                         value={field.value}
+//                       />
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
+
+//               <FormField
+//                 control={form.control}
+//                 name='status'
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel>Date of Birth</FormLabel>
+//                     <FormControl>
+//                       <DatePickerDemo {...field} onChange={field.onChange} />
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
+
+//               <FormField
+//                 control={form.control}
+//                 name='checkBoxC'
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel>Upload ID</FormLabel>
+//                     <FormControl>
+//                       <CheckboxWithText {...field} />
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
+
+//               <FormField
+//                 control={form.control}
+//                 name='file'
+//                 render={({ field }) => (
+//                   <FormItem>
+//                     <FormLabel>Date of Birth</FormLabel>
+//                     <FormControl>
+//                       <Previews
+//                         initialFiles={files}
+//                         onFilesChange={(e) => {
+//                           field.onChange(e)
+//                           setFiles(e)
+//                         }}
+//                       />
+//                     </FormControl>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
+//             </div>
+//             <div className='col-span-full mt-10 flex items-center justify-center space-x-4 md:justify-between md:px-8'>
+//               <Button
+//                 size='lg'
+//                 variant='default'
+//                 type='submit'
+//                 disabled={loading}
+//               >
+//                 {loading ? 'Submitting...' : 'Submit'}
+//               </Button>
+//               <Button size='lg' variant='outline' onClick={onClose}>
+//                 Cancel
+//               </Button>
+//             </div>
+//           </form>
+//         </Form>
+//       </DialogContent>
+//     </Dialog>
+//   )
+// }
+// export default AddEditModal
+
+// import React from 'react'
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogTitle,
+//   DialogDescription,
+//   DialogHeader,
+// } from '@/components/ui/dialog'
+// import { z } from 'zod'
+
+// interface SellerDetailsModalProps {
+//   isOpen: boolean
+//   onClose: () => void
+//   initialData?: any
+// }
+// <div className='mb-6 flex flex-col'>
+// <span className='text-lg font-medium'>Card Number</span>
+// <span className='text-lg font-medium text-muted-foreground'>
+//   {initialData?.priority}
+// </span>
+// export const DetailsModal: React.FC<SellerDetailsModalProps> = ({
+//   isOpen,
+//   onClose,
+//   initialData = {},
+// }) => {
+//   return (
+//     <Dialog open={isOpen} onOpenChange={onClose}>
+//       <DialogContent className='max-w-2xl'>
+//         <DialogHeader>
+//           <DialogTitle>Details Data Modal</DialogTitle>
+//           <DialogDescription>All the details Data below.</DialogDescription>
+//         </DialogHeader>
+//         <div className=''>
+//           <div className='grid grid-cols-1 px-4 py-5 sm:p-6 md:grid-cols-2'>
+//             <div className='mb-6 flex flex-col'>
+//               <span className=' text-lg font-medium'>Cardholder Name</span>
+//               <span className='text-lg font-medium text-muted-foreground'>
+//                 {initialData?.label}
+//               </span>
+//             </div>
+//             <div className='mb-6 flex flex-col'>
+//               <span className='text-lg font-medium'>Card Number</span>
+//               <span className='text-lg font-medium text-muted-foreground'>
+//                 {initialData?.priority}
+//               </span>
+//             </div>
+//             <div className='mb-6 flex flex-col'>
+//               <span className=' text-lg font-medium'>Cardholder Name</span>
+
+//               <span className='text-lg font-medium text-muted-foreground '>
+//                 {initialData?.status}
+//               </span>
+//             </div>
+//             <div className='mb-6 flex flex-col'>
+//               <span className=' text-lg font-medium'>Cardholder Name</span>
+//               <span className='a text-lg font-medium text-muted-foreground '>
+//                 {initialData?.title}
+//               </span>
+//             </div>
+//           </div>
+//         </div>
+//       </DialogContent>
+//     </Dialog>
+//   )
+// }
